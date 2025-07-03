@@ -476,7 +476,7 @@ const addMainCategory = async (req, res) => {
       image,
       subcat: [],
       status: true,
-      attribute: attribute ? JSON.parse(attribute) : [],
+      attribute: attribute? JSON.parse(attribute) : [],
       filter: parsedFilters
     };
 
@@ -485,7 +485,7 @@ const addMainCategory = async (req, res) => {
     res.status(201).json({ message: "Main Category added", id: result.insertedId });
   } catch (error) {
     console.error("Error while adding category:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error",error.message });
   }
 };
 
