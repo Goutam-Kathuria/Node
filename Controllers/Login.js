@@ -431,7 +431,7 @@ const SearchLocation = async (req, res) => {
 //Add Main Category
 
 
-const addMainCategory = async (req, res) => {
+exports.addMainCategory = async (req, res) => {
   try {
     const { name, description, attribute, filter } = req.body;
     const image = req.files.image?.[0].path;
@@ -447,28 +447,23 @@ const addMainCategory = async (req, res) => {
     let parsedFilters = [];
 
     if (filter) {
-      const rawFilters = JSON.parse(filter); 
+  const rawFilters = JSON.parse(filter); 
 
-      for (const f of rawFilters) {
-        const filterId = new ObjectId(f._id);
-        const filterDoc = await filterCollection.findOne({ _id: filterId });
+  for (const f of rawFilters) {
+    const filterId = new ObjectId(f._id);
+    const filterDoc = await filterCollection.findOne({ _id: filterId });
 
-        if (!filterDoc) {
-          console.log(`Filter not found for id: ${f._id}`);
-          continue;
-        }
+    parsedFilters.push({
+      _id: filterId,
+      Filter_name: filterDoc.Filter_name,
+      Filter: filterDoc.Filter.map(item => ({
+        _id: item._id,
+        name: item.name
+      }))
+    });
+  }
+}
 
-        // const selectedValues = filterDoc.Filter.map(item => ({
-        //   _id: new ObjectId(item._id),
-        //   name: item.name
-        // }));
-
-        parsedFilters.push({
-          _id: filterId,
-          Filter_name: filterDoc.Filter_name,
-        });
-      }
-    }
 
     const newCategory = {
       name,
@@ -485,10 +480,9 @@ const addMainCategory = async (req, res) => {
     res.status(201).json({ message: "Main Category added", id: result.insertedId });
   } catch (error) {
     console.error("Error while adding category:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error:error.message});
   }
 };
-
 
 
 
